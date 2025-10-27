@@ -1,3 +1,4 @@
 *.pub
 *.key
-boot/y
+*.o
+
