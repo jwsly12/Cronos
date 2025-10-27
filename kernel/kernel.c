@@ -1,13 +1,3 @@
-//[✔️] Boot (GRUB) + Kernel Main
-//[✔️] Texto na tela + logo
-//[➡️] Função print + clear + cores
-//[➡️] Teclado (entrada)
-//[➡️] Timer (ticks)
-//[➡️] Shell de comandos
-//[➡️] Memória
-//[➡️] Sistema de arquivos
-//[➡️] Multitarefa
-
 #include "../include/video.h"
 
 
