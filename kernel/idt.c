@@ -53,7 +53,7 @@ struct idt_pointer {
 } __attribute__((packed));
 
 //Tabela de 256 entradas da IDT
-struct idt_entry[IDT_ENTRIES];
+struct idt_entry idtcle[IDT_ENTRIES];
 struct idt_pointer idtp;
 
 //Inicializar a tabela
