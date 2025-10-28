@@ -32,7 +32,9 @@ flags → indica se a entrada está ativa (presente) e qual o tipo; sem isso, a 
 
 //Entradas
 
+
 #define IDT_ENTRIES 256
+#include "../include/stdint.h"
 
 struct idt_entry {
 
@@ -53,9 +55,29 @@ struct idt_pointer {
 } __attribute__((packed));
 
 //Tabela de 256 entradas da IDT
-struct idt_entry idtcle[IDT_ENTRIES];
+struct idt_entry idt[IDT_ENTRIES];
 struct idt_pointer idtp;
 
 //Inicializar a tabela
+
+/*
+num → Número da entrada da IDT (0–255).
+base → Endereço da função que vai tratar a interrupção (ISR).
+sel → Seletor de segmento de código no GDT.
+flags → Tipo da porta e nível de privilégio da interrupção.
+*/
+
+void idt_set_get(int num , uint32_t  base , uint16_t  sel , uint8_t  flags){
+
+    idt[n].offset_low  =  base & 0xFFFF;
+    idt[n].selector    =  sel;
+    idt[n].zero        =    0;
+    idt[n].type_attr   =  flags;
+    idt[n].offset_high =  (base >> 16) & 0xFFFF;
+
+}
+
+
+
 
 //Inicializar o ponteiro
