@@ -40,8 +40,8 @@ struct idt_entry {
 
     unsigned short base_low;  //16 bits baixos da ISR
     unsigned short sel;       //Segmento do código do kernel
-    unsigned char always0;    //sempre em 0
-    unsigned char flags;      //Privilégios
+    unsigned char  always0;    //sempre em 0
+    unsigned char  flags;      //Privilégios
     unsigned short base_high;   //16 bits altos da ISR
     
 } __attribute__((packed));
@@ -67,17 +67,46 @@ sel → Seletor de segmento de código no GDT.
 flags → Tipo da porta e nível de privilégio da interrupção.
 */
 
-void idt_set_get(int num , uint32_t  base , uint16_t  sel , uint8_t  flags){
+void idt_set_gate(int num, uint32_t  base, uint16_t  sel, uint8_t  flags){
 
-    idt[n].offset_low  =  base & 0xFFFF;
-    idt[n].selector    =  sel;
-    idt[n].zero        =    0;
-    idt[n].type_attr   =  flags;
-    idt[n].offset_high =  (base >> 16) & 0xFFFF;
+    idt[num].base_low  = base & 0xFFFF;
+    idt[num].sel       = sel;
+    idt[num].always0   = 0;
+    idt[num].flags     = flags;
+    idt[num].base_high = (base >> 16) & 0xFFFF;
 
 }
 
 
+//Carregar a IDT
 
+/*
+r = registrado EAX
+*/
 
-//Inicializar o ponteiro
+static inline void load_idt(struct idt_pointer* idtp){
+   __asm__ volatile ("lidtl (%0)" : : "r"(idtp));
+/*
+global idt_load
+idt_load:
+    lidt [eax]    ; Carrega o endereço passado em EAX
+    ret
+
+*/
+}
+
+//Inicializar IDT
+
+void init_idt(){
+
+    //Ponteiro
+    idtp.limit = (sizeof(struct idt_entry) * IDT_ENTRIES ) - 1;
+    idtp.base  = (uint32_t)&idt;
+
+    //Zera Tabela
+    for (int i = 0 ; i < IDT_ENTRIES; i++ ){
+        idt_set_gate(i ,0 ,0);
+    }
+
+    idt_load(&idtp)
+}
