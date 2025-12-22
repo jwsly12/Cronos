@@ -1,0 +1,31 @@
+### --- Binários e Objetos ---
+*.o
+*.elf
+*.bin
+*.iso
+*.img
+
+### --- Diretórios de Build ---
+# Ignora a pasta inteira onde o kernel e a ISO são gerados
+build/
+bin/
+obj/
+
+### --- Chaves e Segurança ---
+# Nunca envie chaves privadas ou públicas para o repositório
+*.key
+*.pub
+*.pem
+*.secret
+
+### --- Arquivos do Sistema e Editores ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+### --- Logs e Debug ---
+*.log
+qemu-vlan0.pcap

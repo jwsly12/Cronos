@@ -1,8 +1,12 @@
 #include "../include/video.h"
+#include "../include/pic.h"
+#include "../include/idt.h"
+#include "../include/io.h"
 
+int cursor_x = 0;
+int cursor_y = 18;
 
-//void logo(void); 
-
+extern void init_gdt();
 void logo() {
 
 
@@ -29,8 +33,65 @@ void logo() {
 }
 
 
+char *scancode_to_char[] = {
+    "?", "?", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "BACK",
+    "TAB", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "ENTER",
+    "CTRL", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`", "LSHIFT"
+};
+
+
+
+void keyboard_handler() {
+    uint8_t scancode = inb(0x60); 
+
+    // Verifica se a tecla foi PRESSIONADA (bit 7 desligado)
+    if (!(scancode & 0x80)) {
+        // Se for scancode de espaço (0x39) ou letras/números válidos
+        if (scancode == 0x0E){
+            if(cursor_x >0){
+                cursor_x--;
+                print_screen(0x0F , " " , cursor_x , cursor_y);
+            }
+        }
+        else if (scancode < 58 && scancode_to_char[scancode][0] != '?') {
+            
+            char* tecla = scancode_to_char[scancode];
+            
+            // Tratamento especial para o ENTER
+            if (scancode == 0x1C) {
+                cursor_x = 0;
+                cursor_y++;
+            } else {
+                print_screen(0x0F, tecla, cursor_x, cursor_y);
+                cursor_x += 1; // Avança o cursor
+            }
+
+            // Scroll simples: se chegar no fim da linha
+            if (cursor_x >= 80) {
+                cursor_x = 0;
+                cursor_y++;
+            }
+            
+        }
+    }
+
+    pic_send_eoi(1);
+}
+
 void kernel_main() {
- 
+    init_gdt();   
+    init_idt();   
+    pic_remap();  
+
     logo();
-    while (1) {}
+    print_screen(0x0F, "Sistema pronto! Digite algo:", 0, 17);
+
+    
+    outb(0x21, 0xFD); 
+
+    __asm__ volatile("sti");
+
+    while (1) {
+        __asm__ volatile("hlt");
+    }
 }

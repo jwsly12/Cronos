@@ -2,7 +2,7 @@
 #define _PIC_H_
 
 // Inicializa e remapeia o PIC
-void pic_remap();
+void pic_remap(void);
 
 // Envia EOI (End of Interrupt) para o PIC apropriado
 void pic_send_eoi(unsigned char irq);

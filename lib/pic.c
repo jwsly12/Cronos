@@ -6,6 +6,7 @@
 #define PIC1_DATA    0x21
 #define PIC2_COMMAND 0xA0
 #define PIC2_DATA    0xA1
+#define PIC_EOI      0x20
 
 // Comandos de inicialização (ICWs)
 #define ICW1_INIT  0x11  // Inicia a configuração
@@ -76,15 +77,14 @@ void pic_remap() {
 }
 
 
-pic_send_eio(unsigned char irq) {
- 
-    if(irq >= 8 ){
-        outb(PIC2_COMMAND , 0x20);
+void pic_send_eoi(uint8_t irq) {
+    if(irq >= 8) {
+        outb(0xA0, 0x20); // Envia para o Slave PIC se for IRQ 8-15
     }
-    outb(PIC1_COMMAND , 0x20);
+    outb(0x20, 0x20);     // Envia para o Master PIC
 }
 
-void  pic_set_mask(unsigned chat irq_line){
+void  pic_set_mask(unsigned char irq_line){
 
     unsigned short port;
     unsigned char value;

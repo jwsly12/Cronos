@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "../include/oi.h"
+#include "../include/io.h"
 
 
 /*
@@ -49,7 +49,7 @@ Esses vão ser os argumentos da função outb(Para inb apenas a porta)
 
 }
 
- void inb(uint16_t port){
+ uint8_t inb(uint16_t port){
 
     uint8_t ret; //Aloca espaço para AL
     __asm__ volatile ("inb %1 , %0" : "=a"(ret) : "Nd"(port));
