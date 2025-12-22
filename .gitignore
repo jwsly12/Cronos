@@ -12,7 +12,7 @@ bin/
 obj/
 
 ### --- Chaves e Segurança ---
-# Nunca envie chaves privadas ou públicas para o repositório
+
 *.key
 *.pub
 *.pem
