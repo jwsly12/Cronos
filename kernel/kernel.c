@@ -34,11 +34,12 @@ void logo() {
 
 
 char *scancode_to_char[] = {
-    "?", "?", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "BACK",
-    "TAB", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "ENTER",
-    "CTRL", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`", "LSHIFT"
+    "?", "ESC", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "BACK", // 0x00 - 0x0E
+    "TAB", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "ENTER",      // 0x0F - 0x1C
+    "CTRL", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`",             // 0x1D - 0x29
+    "LSHIFT", "\\", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "/", "RSHIFT",     // 0x2A - 0x36
+    "*", "ALT", "SPACE", "CAPS", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10" // 0x37 - 0x44
 };
-
 
 
 void keyboard_handler() {
@@ -47,6 +48,7 @@ void keyboard_handler() {
     // Verifica se a tecla foi PRESSIONADA (bit 7 desligado)
     if (!(scancode & 0x80)) {
         // Se for scancode de espaço (0x39) ou letras/números válidos
+
         if (scancode == 0x0E){
             if(cursor_x >0){
                 cursor_x--;
@@ -84,7 +86,7 @@ void kernel_main() {
     pic_remap();  
 
     logo();
-    print_screen(0x0F, "Sistema pronto! Digite algo:", 0, 17);
+    print_screen(0x0F, "Sistema Carregado! Digite algo:", 0, 17);
 
     
     outb(0x21, 0xFD); 
