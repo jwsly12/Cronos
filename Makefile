@@ -1,9 +1,11 @@
 BUILD_DIR := build
 ISO_DIR := $(BUILD_DIR)/iso
 KERNEL := $(BUILD_DIR)/kernel.elf
-ISO_IMAGE := $(BUILD_DIR)/meu_kernel.iso
+ISO_IMAGE := $(BUILD_DIR)/cronos.iso
 
-# 1. Adicionado gdt.o e gdt_asm.o à lista de objetos
+# Desativa regras implícitas para evitar conflitos com o GCC do host
+.SUFFIXES:
+
 OBJS := $(BUILD_DIR)/boot.o \
         $(BUILD_DIR)/interrupts.o \
         $(BUILD_DIR)/gdt_asm.o \
@@ -14,29 +16,34 @@ OBJS := $(BUILD_DIR)/boot.o \
         $(BUILD_DIR)/io.o \
         $(BUILD_DIR)/video.o
 
+# Centralizando as flags do GCC para incluir proteções importantes em OSdev
+CFLAGS := -m32 -ffreestanding -O2 -Wall -Wextra -fno-stack-protector -fno-pie -Iinclude
+
 all: iso
 
 $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
 
-# Compilando Assembly do Boot
+# Compilando Assembly
 $(BUILD_DIR)/boot.o: boot/boot.s | $(BUILD_DIR)
 	@nasm -f elf32 boot/boot.s -o $(BUILD_DIR)/boot.o
 
-# Compilando o Wrapper de Interrupções
 $(BUILD_DIR)/interrupts.o: kernel/interrupts.s | $(BUILD_DIR)
 	@nasm -f elf32 kernel/interrupts.s -o $(BUILD_DIR)/interrupts.o
 
-# 2. Nova regra para compilar o Assembly da GDT (gdt_flush)
 $(BUILD_DIR)/gdt_asm.o: kernel/gdt.s | $(BUILD_DIR)
 	@nasm -f elf32 kernel/gdt.s -o $(BUILD_DIR)/gdt_asm.o
 
-# Compilando os arquivos C
+# Regras para os arquivos C (.c) de cada pasta do Cronos
 $(BUILD_DIR)/%.o: kernel/%.c | $(BUILD_DIR)
-	@gcc -m32 -ffreestanding -Iinclude -c $< -o $@
+	@gcc $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: lib/%.c | $(BUILD_DIR)
-	@gcc -m32 -ffreestanding -Iinclude -c $< -o $@
+	@gcc $(CFLAGS) -c $< -o $@
+
+# NOVO: Regra que ensina o Make a compilar o que estiver na pasta drivers/
+$(BUILD_DIR)/%.o: drivers/%.c | $(BUILD_DIR)
+	@gcc $(CFLAGS) -c $< -o $@
 
 # Linkando tudo no Kernel ELF
 $(KERNEL): $(OBJS) link.ld
@@ -54,3 +61,5 @@ run: iso
 
 clean:
 	@rm -rf $(BUILD_DIR)
+
+.PHONY: all iso run clean
