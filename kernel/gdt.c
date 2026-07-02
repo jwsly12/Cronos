@@ -1,5 +1,15 @@
 #include "../include/stdint.h"
 
+/*
+A GDT (Global Descriptor Table) é uma tabela de 
+descriptors de segmentos globais.
+Ela serve estabelecer os limites de seguimentos de
+memória
+
+Sem ela não conseguimos carregar um programa na memória.
+Também não seria possível alternar para o modo protegido.
+*/
+
 struct gdt_entry {
     uint16_t limit_low;
     uint16_t base_low;
