@@ -23,7 +23,7 @@ Usando o calculo para nos guiar.
 
 */
 
-int stcmp(char* str1, char* str2) {
+int str_compare(char* str1, char* str2) {
     while (*str1 == *str2) {
         if (*str1 == '\0') {
             return 0;
