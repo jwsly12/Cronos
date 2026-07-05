@@ -3,7 +3,6 @@ ISO_DIR := $(BUILD_DIR)/iso
 KERNEL := $(BUILD_DIR)/kernel.elf
 ISO_IMAGE := $(BUILD_DIR)/cronos.iso
 
-# Desativa regras implícitas para evitar conflitos com o GCC do host
 .SUFFIXES:
 
 OBJS := $(BUILD_DIR)/boot.o \
@@ -14,9 +13,10 @@ OBJS := $(BUILD_DIR)/boot.o \
         $(BUILD_DIR)/idt.o \
         $(BUILD_DIR)/pic.o \
         $(BUILD_DIR)/io.o \
-        $(BUILD_DIR)/video.o
+        $(BUILD_DIR)/video.o \
+        $(BUILD_DIR)/string.o \
+        $(BUILD_DIR)/npsh.o
 
-# Centralizando as flags do GCC para incluir proteções importantes em OSdev
 CFLAGS := -m32 -ffreestanding -O2 -Wall -Wextra -fno-stack-protector -fno-pie -Iinclude
 
 all: iso
@@ -34,16 +34,37 @@ $(BUILD_DIR)/interrupts.o: kernel/interrupts.s | $(BUILD_DIR)
 $(BUILD_DIR)/gdt_asm.o: kernel/gdt.s | $(BUILD_DIR)
 	@nasm -f elf32 kernel/gdt.s -o $(BUILD_DIR)/gdt_asm.o
 
-# Regras para os arquivos C (.c) de cada pasta do Cronos
-$(BUILD_DIR)/%.o: kernel/%.c | $(BUILD_DIR)
+# --- REGRAS DE COMPILAÇÃO C (Corrigidas para evitar ambiguidade) ---
+
+# Arquivos da pasta kernel/
+$(BUILD_DIR)/gdt.o: kernel/gdt.c | $(BUILD_DIR)
 	@gcc $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.o: lib/%.c | $(BUILD_DIR)
+$(BUILD_DIR)/kernel.o: kernel/kernel.c | $(BUILD_DIR)
 	@gcc $(CFLAGS) -c $< -o $@
 
-# NOVO: Regra que ensina o Make a compilar o que estiver na pasta drivers/
-$(BUILD_DIR)/%.o: drivers/%.c | $(BUILD_DIR)
+$(BUILD_DIR)/idt.o: kernel/idt.c | $(BUILD_DIR)
 	@gcc $(CFLAGS) -c $< -o $@
+
+# Arquivos da pasta lib/
+$(BUILD_DIR)/string.o: lib/string.c | $(BUILD_DIR)
+	@gcc $(CFLAGS) -c $< -o $@
+
+# Arquivos da pasta drivers/
+$(BUILD_DIR)/io.o: drivers/io.c | $(BUILD_DIR)
+	@gcc $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/pic.o: drivers/pic.c | $(BUILD_DIR)
+	@gcc $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/video.o: drivers/video.c | $(BUILD_DIR)
+	@gcc $(CFLAGS) -c $< -o $@
+
+# Arquivos da pasta bin/
+$(BUILD_DIR)/npsh.o: bin/npsh.c | $(BUILD_DIR)
+	@gcc $(CFLAGS) -c $< -o $@
+
+# -----------------------------------------------------------------
 
 # Linkando tudo no Kernel ELF
 $(KERNEL): $(OBJS) link.ld

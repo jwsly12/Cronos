@@ -1,4 +1,6 @@
 /*
+Str_compare
+
 Para criar uma função de comparação de string 
 Primeiro vamos entender a lógica por trás dessa função
 
@@ -32,4 +34,27 @@ int str_compare(char* str1, char* str2) {
         str2++;
     }
     return *(const unsigned char*)str1 - *(const unsigned char*)str2;
+}
+
+/*
+
+memory_set()
+
+Essa função é usada exclusivamente para limpar
+buffers de memória.
+
+// Chamando a função com os 3 argumentos:
+memory_set(input_buffer, 0, 256);
+              │          │   └── 3. Quantidade: Limpe exatamente 256 bytes
+              │          └────── 2. Conteúdo: Preencha cada byte com o número 0
+              └───────────────── 1. Endereço: Comece no início do 'input_buffer'
+
+
+*/
+
+void memory_set(void *memory_adress , int content , int quantity) {
+
+    for(int i = 0 ; i < quantity ; i++ ){
+        ((char*)memory_adress)[i] = content;
+    } 
 }
