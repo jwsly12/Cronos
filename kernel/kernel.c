@@ -33,53 +33,6 @@ void logo() {
 }
 
 
-char *scancode_to_char[] = {
-    "?", "ESC", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "BACK", // 0x00 - 0x0E
-    "TAB", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "ENTER",      // 0x0F - 0x1C
-    "CTRL", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`",             // 0x1D - 0x29
-    "LSHIFT", "\\", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "/", "RSHIFT",     // 0x2A - 0x36
-    "*", "ALT", "SPACE", "CAPS", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10" // 0x37 - 0x44
-};
-
-
-void keyboard_handler() {
-    uint8_t scancode = inb(0x60); 
-
-    // Verifica se a tecla foi PRESSIONADA (bit 7 desligado)
-    if (!(scancode & 0x80)) {
-        // Se for scancode de espaço (0x39) ou letras/números válidos
-
-        if (scancode == 0x0E){
-            if(cursor_x >0){
-                cursor_x--;
-                print_screen(0x0F , " " , cursor_x , cursor_y);
-            }
-        }
-        else if (scancode < 58 && scancode_to_char[scancode][0] != '?') {
-            
-            char* tecla = scancode_to_char[scancode];
-            
-            // Tratamento especial para o ENTER
-            if (scancode == 0x1C) {
-                cursor_x = 0;
-                cursor_y++;
-            } else {
-                print_screen(0x0F, tecla, cursor_x, cursor_y);
-                cursor_x += 1; // Avança o cursor
-            }
-
-            // Scroll simples: se chegar no fim da linha
-            if (cursor_x >= 80) {
-                cursor_x = 0;
-                cursor_y++;
-            }
-            
-        }
-    }
-
-    pic_send_eoi(1);
-}
-
 void kernel_main() {
     init_gdt();   
     init_idt();   

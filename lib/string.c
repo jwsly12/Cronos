@@ -22,7 +22,6 @@ Conceito Algortimico:
 Só precisamos percorer as duas strings e
 comparar se seus caracteres são iguais
 Usando o calculo para nos guiar.
-
 */
 
 int str_compare(char* str1, char* str2) {
@@ -37,7 +36,6 @@ int str_compare(char* str1, char* str2) {
 }
 
 /*
-
 memory_set()
 
 Essa função é usada exclusivamente para limpar
@@ -48,8 +46,6 @@ memory_set(input_buffer, 0, 256);
               │          │   └── 3. Quantidade: Limpe exatamente 256 bytes
               │          └────── 2. Conteúdo: Preencha cada byte com o número 0
               └───────────────── 1. Endereço: Comece no início do 'input_buffer'
-
-
 */
 
 void memory_set(void *memory_adress , int content , int quantity) {

@@ -25,7 +25,6 @@ void clear_screen(unsigned char color) {
     }
 }
 
-
 void print_screen(unsigned char color, const char* string, int x, int y) {
     volatile char* video = (volatile char*)0xB8000;
     int width = 80;
